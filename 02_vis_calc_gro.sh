@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# --- 0. ファイルパスと名前の確認 (必要なら編集) ---
+# --- 0. ★★★ 要編集  ★★★---
 
 INITIAL_GRO="decane_bulk_prep/decane_bulk_100.gro"
 TOPOLOGY_FILE="decane_bulk_prep/decane.acpype/decane_GMX.top"
@@ -211,4 +211,8 @@ echo "You can now analyze the results, for example, calculate viscosity:"
 echo "gmx energy -f md_prod.edr -evisco viscosity_einstein.xvg -o energy.xvg -b 2000" # Example command
 echo "python plot_viscosity.py viscosity_einstein.xvg" # Example command to plot viscosity
 echo "----------------------------------------"
+
+gmx energy -f md_prod.edr -evisco viscosity_einstein.xvg -o energy.xvg -b 2000
+python plot_viscosity.py viscosity_einstein.xvg
+
 exit 0
