@@ -1,0 +1,46 @@
+; npt_improved.mdp - Improved settings for NPT equilibration (500 ps)
+title                   = NPT equilibration (500ps) at 300K, 1bar
+integrator              = md        ; Leap-frog integrator
+nsteps                  = 250000    ; 500 ps (250000 * 0.002 ps) - adjust duration as needed
+dt                      = 0.002     ; 2 fs time step
+
+; Output control
+nstxout-compressed      = 5000      ; Save coordinates every 10 ps
+nstvout                 = 0
+nstenergy               = 5000      ; Save energies every 10 ps
+nstlog                  = 5000      ; Update log file every 10 ps
+
+; Bond parameters
+constraint_algorithm    = lincs
+constraints             = all-bonds
+lincs_iter              = 1
+lincs_order             = 4
+
+; Neighbor searching and interactions - consistent with previous steps
+cutoff-scheme           = Verlet
+ns_type                 = grid
+nstlist                 = 20
+pbc                     = xyz
+rcoulomb                = 1.2
+rvdw                    = 1.2
+coulombtype             = PME
+pme_order               = 4
+fourierspacing          = 0.12
+vdwtype                 = Cut-off   ; Consistent with previous steps
+
+; Temperature coupling
+tcoupl                  = V-rescale ; Or nose-hoover
+tc-grps                 = System
+tau_t                   = 0.2       ; Time constant for temperature coupling (ps)
+ref_t                   = 300       ; Target temperature (K)
+
+; Pressure coupling
+pcoupl                  = C-rescale ; Or Parrinello-Rahman
+pcoupltype              = isotropic
+tau_p                   = 2.0       ; Time constant for pressure coupling (ps) - Longer is often more stable
+compressibility         = 4.5e-5    ; Compressibility (bar^-1) - Use literature value for n-decane if available
+ref_p                   = 1.0       ; Target pressure (bar)
+
+; Velocity generation - NO for continuation run
+continuation            = yes       ; Continue from previous run (e.g., NVT)
+gen_vel                 = no        ; Do not generate new velocities

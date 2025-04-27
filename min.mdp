@@ -1,0 +1,38 @@
+; minim_improved.mdp - Improved settings for energy minimization
+title       = Energy Minimization (PME, Cut-off VdW)
+
+; Run control
+integrator  = steep     ; Algorithm for energy minimization (steepest descent)
+nsteps      = 50000     ; Maximum number of minimization steps (increased significantly)
+                        ; Minimization stops earlier if convergence criteria (emtol) is met.
+
+; Energy minimization parameters
+emtol       = 1000.0    ; Stop minimization when the maximum force is less than 1000.0 kJ/mol/nm
+emstep      = 0.01      ; Initial step size
+
+; Neighbor searching and interactions
+cutoff-scheme   = Verlet    ; Use Verlet buffer and lists
+pbc             = xyz       ; Periodic boundary conditions in all directions
+
+; Electrostatics using PME
+coulombtype     = PME       ; Use Particle Mesh Ewald for long-range electrostatics
+rcoulomb        = 1.2       ; Cut-off distance for the short-range electrostatic interactions (nm)
+pme_order       = 4         ; Interpolation order for PME (4 = cubic, default)
+fourierspacing  = 0.12      ; Desired grid spacing for PME FFT (nm). grompp will choose optimal grid dimensions.
+
+; VdW interactions using Cut-off
+vdwtype         = Cut-off   ; Use a simple cut-off for Van der Waals interactions.
+                            ; (Switch function 'vdwtype = Switch' with 'rvdw_switch = 1.0' is also an option)
+rvdw            = 1.2       ; Cut-off distance for Van der Waals interactions (nm)
+
+; No temperature or pressure coupling during energy minimization
+tcoupl      = no
+pcoupl      = no
+
+; No velocities needed for minimization
+gen_vel     = no
+
+; Constraints - Apply the same constraints as in subsequent MD runs (recommended)
+constraints     = all-bonds ; Constrain the lengths of all bonds. This allows a larger timestep (e.g., 2fs) in MD.
+                            ; If you plan to constrain only bonds involving H-atoms later, use 'h-bonds'.
+                            ; Use 'none' only if you specifically need to relax bond lengths during minimization.

@@ -1,0 +1,48 @@
+; md_prod.mdp - Production run for viscosity calculation (example: 20 ns)
+title                   = Production MD (NPT) for n-Decane viscosity at 300K, 1bar
+
+; Run control
+integrator              = md        ; Leap-frog integrator
+nsteps                  = 50000000  ; 100 ns (10,000,000 * 0.002 ps) - ★★★ WARNING: Needs to be MUCH longer for reliable viscosity (e.g., 100-500 ns or more recommended) ★★★
+dt                      = 0.002     ; 2 fs time step
+
+; Output control - CRITICAL settings for viscosity calculation
+nstxout-compressed      = 50000     ; Save coordinates every 100 ps (adjust based on disk space and analysis needs)
+nstvout                 = 0         ; Velocities are usually not saved frequently
+nstenergy               = 10        ; ★★★ Output energy/pressure tensor VERY frequently (every 0.02 ps) for Green-Kubo analysis ★★★
+nstlog                  = 5000      ; Update log file every 10 ps (less frequent than nstenergy)
+
+; Bond parameters
+constraint_algorithm    = lincs
+constraints             = all-bonds
+lincs_iter              = 1
+lincs_order             = 4
+
+; Neighbor searching and interactions - KEEP CONSISTENT with equilibration steps
+cutoff-scheme           = Verlet
+ns_type                 = grid
+nstlist                 = 20        ; Update neighbor list frequency (must be >= nstcalcenergy if using energy minimization neighbor list flag, but generally >=10 is safe with Verlet)
+pbc                     = xyz
+rcoulomb                = 1.2
+rvdw                    = 1.2
+coulombtype             = PME
+pme_order               = 4
+fourierspacing          = 0.12
+vdwtype                 = Cut-off
+
+; Temperature coupling - KEEP CONSISTENT with equilibration
+tcoupl                  = V-rescale ; Or nose-hoover
+tc-grps                 = System
+tau_t                   = 0.2
+ref_t                   = 300
+
+; Pressure coupling - KEEP CONSISTENT with equilibration
+pcoupl                  = C-rescale ; Or Parrinello-Rahman (P-R might be slightly preferred for production fluctuations)
+pcoupltype              = isotropic
+tau_p                   = 2.0
+compressibility         = 4.5e-5    ; Use literature value for n-decane if available
+ref_p                   = 1.0
+
+; Velocity generation - NO for continuation run
+continuation            = yes       ; Continue simulation from the NPT equilibration run
+gen_vel                 = no        ; Do not generate new velocities

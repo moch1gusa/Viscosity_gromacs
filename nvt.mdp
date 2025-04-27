@@ -1,0 +1,43 @@
+; nvt_improved.mdp - Improved settings for NVT equilibration (100 ps)
+title                   = NVT equilibration (100ps) at 300K
+integrator              = md        ; Leap-frog integrator (use with tcoupl)
+nsteps                  = 50000     ; 100 ps (50000 * 0.002 ps) - adjust duration if needed
+dt                      = 0.002     ; 2 fs time step
+
+; Output control
+nstxout-compressed      = 5000      ; Save coordinates every 10 ps (adjust frequency as needed)
+nstvout                 = 0         ; Don't save velocities often during equilibration
+nstenergy               = 5000      ; Save energies every 10 ps
+nstlog                  = 5000      ; Update log file every 10 ps
+
+; Bond parameters
+constraint_algorithm    = lincs     ; LINear Constraint Solver
+constraints             = all-bonds ; Constrain all bonds allowing 2fs timestep
+lincs_iter              = 1         ; Accuracy of LINCS
+lincs_order             = 4         ; Also related to accuracy
+
+; Neighbor searching and interactions - consistent with minimization
+cutoff-scheme           = Verlet
+ns_type                 = grid      ; Use grid-based neighbor searching
+nstlist                 = 20        ; Update neighbor list every 40 fs (20 * 0.002 ps)
+pbc                     = xyz
+rcoulomb                = 1.2
+rvdw                    = 1.2
+coulombtype             = PME       ; Use PME for electrostatics
+pme_order               = 4         ; Cubic interpolation for PME
+fourierspacing          = 0.12      ; Grid spacing for PME FFT
+vdwtype                 = Cut-off   ; Use Cut-off for VdW (consistent with minim_improved.mdp)
+
+; Temperature coupling
+tcoupl                  = V-rescale ; Use V-rescale thermostat
+tc-grps                 = System    ; Couple the entire system to the heat bath
+tau_t                   = 0.1       ; Time constant for temperature coupling (ps) - shorter helps faster equilibration
+ref_t                   = 300       ; Target temperature (K)
+
+; Pressure coupling is off for NVT
+pcoupl                  = no
+
+; Velocity generation for the start of NVT run
+gen_vel                 = yes       ; Assign velocities from Maxwell distribution at gen_temp
+gen_temp                = 300       ; Temperature for initial velocity generation
+gen_seed                = -1        ; Generate random seed automatically
